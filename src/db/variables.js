@@ -94,3 +94,15 @@ export const GetMarketingOwnUUID = async (db, own_uuid) => {
 
 	return marketingUuid || null;
 };
+
+export function sanitizePayload(src) {
+	const out = {};
+	for (const [k, v] of Object.entries(src || {})) {
+		if (v === '' || v === 'null' || v === null) {
+			out[k] = null;
+		} else {
+			out[k] = v;
+		}
+	}
+	return out;
+}

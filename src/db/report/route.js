@@ -316,27 +316,27 @@ reportRouter.get('/market-report', selectMarketReport);
 // * Market Report Archive routes
 reportRouter.post(
 	'/market-report-archive',
-	marketReportArchiveOperations.generateMarketReportSnapshot
+	marketReportArchiveOperations.insert
 );
 reportRouter.get(
 	'/market-report-archive',
-	marketReportArchiveOperations.listMarketReportSnapshots
+	marketReportArchiveOperations.selectAll
 );
 reportRouter.get(
 	'/market-report-archive/:uuid',
-	marketReportArchiveOperations.getMarketReportSnapshot
+	marketReportArchiveOperations.select
 );
 reportRouter.delete(
 	'/market-report-archive/:uuid',
-	marketReportArchiveOperations.deleteMarketReportSnapshot
+	marketReportArchiveOperations.remove
 );
 reportRouter.post(
 	'/market-report-archive/:uuid',
-	marketReportArchiveOperations.updateMarketReportSnapshot
+	marketReportArchiveOperations.update
 );
 reportRouter.post(
 	'/market-report-archive/:uuid/confirm',
-	marketReportArchiveOperations.confirmMarketReportSnapshot
+	marketReportArchiveOperations.confirmMarketReport
 );
 
 export const pathReport = {

@@ -12,20 +12,9 @@ import {
 	updateFile,
 	deleteFile,
 } from '../../../util/upload_files.js';
+import { sanitizePayload } from '../../variables.js';
 
 const updatedByUser = alias(hrSchema.users, 'updatedByUser');
-
-function sanitizePayload(src) {
-	const out = {};
-	for (const [k, v] of Object.entries(src || {})) {
-		if (v === '' || v === 'null' || v === null) {
-			out[k] = null;
-		} else {
-			out[k] = v;
-		}
-	}
-	return out;
-}
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

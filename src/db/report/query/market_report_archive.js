@@ -3,24 +3,11 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { market_report_archive } from '../schema.js';
 import { users } from '../../hr/schema.js';
-
-function sanitizePayload(src) {
-	const out = {};
-	for (const [k, v] of Object.entries(src || {})) {
-		if (v === '' || v === 'null' || v === null) {
-			out[k] = null;
-		} else {
-			out[k] = v;
-		}
-	}
-	return out;
-}
+import { sanitizePayload } from '../../variables.js';
 
 // Generate and save market report snapshot
-export async function generateMarketReportSnapshot(req, res, next) {
+export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-
-	const { from_date, to_date, report_name, remarks } = req.body;
 
 	const formData = sanitizePayload(req.body);
 	const file = req.file;
@@ -29,7 +16,7 @@ export async function generateMarketReportSnapshot(req, res, next) {
 
 	// Build the report query
 	if (file) {
-		filePath = await insertFile(file, 'public/complaint');
+		filePath = await insertFile(file, 'public/market_report');
 	}
 
 	try {
@@ -61,8 +48,93 @@ export async function generateMarketReportSnapshot(req, res, next) {
 	}
 }
 
+// Update report remarks
+export async function update(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { uuid: snapshot_uuid } = req.params;
+	const { report_name, remarks } = req.body;
+
+	try {
+		const updated = await db
+			.update(market_report_archive)
+			.set({
+				report_name: report_name || market_report_archive.report_name,
+				remarks: remarks || market_report_archive.remarks,
+				updated_at: new Date(),
+			})
+			.where(eq(market_report_archive.uuid, snapshot_uuid))
+			.returning();
+
+		if (!updated.length) {
+			return res.status(404).json({
+				toast: {
+					status: 404,
+					type: 'error',
+					message: 'Report snapshot not found',
+				},
+			});
+		}
+
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: 'Market report updated successfully',
+		};
+
+		return res.status(200).json({ toast, data: updated[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+// Delete report (soft delete)
+export async function remove(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { uuid: snapshot_uuid } = req.params;
+
+	try {
+		// Soft delete - mark as deleted
+		const deleted = await db
+			.update(market_report_archive)
+			.set({
+				status: 'deleted',
+				updated_at: new Date(),
+			})
+			.where(eq(market_report_archive.uuid, snapshot_uuid))
+			.returning({ uuid: market_report_archive.uuid });
+
+		// If you want hard delete instead, use:
+		// const deleted = await db
+		//     .delete(market_report_archive)
+		//     .where(eq(market_report_archive.uuid, snapshot_uuid))
+		//     .returning({ uuid: market_report_archive.uuid });
+
+		if (!deleted.length) {
+			return res.status(404).json({
+				toast: {
+					status: 404,
+					type: 'error',
+					message: 'Report snapshot not found',
+				},
+			});
+		}
+
+		const toast = {
+			status: 200,
+			type: 'delete',
+			message: 'Market report deleted successfully',
+		};
+
+		return res.status(200).json({ toast, data: deleted[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 // List all snapshots (excluding deleted)
-export async function listMarketReportSnapshots(req, res, next) {
+export async function selectAll(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { status: filter_status } = req.query;
@@ -89,7 +161,7 @@ export async function listMarketReportSnapshots(req, res, next) {
 			.orderBy(desc(market_report_archive.generated_at));
 
 		// Apply status filter if provided
-		if (filter_status && ['pending', 'confirmed'].includes(filter_status)) {
+		if (filter_status) {
 			query.where(eq(market_report_archive.status, filter_status));
 		}
 
@@ -108,7 +180,7 @@ export async function listMarketReportSnapshots(req, res, next) {
 }
 
 // Get specific snapshot with full report data
-export async function getMarketReportSnapshot(req, res, next) {
+export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { uuid: snapshot_uuid } = req.params;
@@ -159,7 +231,7 @@ export async function getMarketReportSnapshot(req, res, next) {
 }
 
 // Confirm/Keep report
-export async function confirmMarketReportSnapshot(req, res, next) {
+export async function confirmMarketReport(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { uuid: snapshot_uuid } = req.params;
@@ -192,91 +264,6 @@ export async function confirmMarketReportSnapshot(req, res, next) {
 			status: 200,
 			type: 'update',
 			message: 'Market report confirmed successfully',
-		};
-
-		return res.status(200).json({ toast, data: updated[0] });
-	} catch (error) {
-		await handleError({ error, res });
-	}
-}
-
-// Delete report (soft delete)
-export async function deleteMarketReportSnapshot(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
-
-	const { uuid: snapshot_uuid } = req.params;
-
-	try {
-		// Soft delete - mark as deleted
-		const deleted = await db
-			.update(market_report_archive)
-			.set({
-				status: 'deleted',
-				updated_at: new Date(),
-			})
-			.where(eq(market_report_archive.uuid, snapshot_uuid))
-			.returning({ uuid: market_report_archive.uuid });
-
-		// If you want hard delete instead, use:
-		// const deleted = await db
-		//     .delete(market_report_archive)
-		//     .where(eq(market_report_archive.uuid, snapshot_uuid))
-		//     .returning({ uuid: market_report_archive.uuid });
-
-		if (!deleted.length) {
-			return res.status(404).json({
-				toast: {
-					status: 404,
-					type: 'error',
-					message: 'Report snapshot not found',
-				},
-			});
-		}
-
-		const toast = {
-			status: 200,
-			type: 'delete',
-			message: 'Market report deleted successfully',
-		};
-
-		return res.status(200).json({ toast, data: deleted[0] });
-	} catch (error) {
-		await handleError({ error, res });
-	}
-}
-
-// Update report remarks
-export async function updateMarketReportSnapshot(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
-
-	const { uuid: snapshot_uuid } = req.params;
-	const { report_name, remarks } = req.body;
-
-	try {
-		const updated = await db
-			.update(market_report_archive)
-			.set({
-				report_name: report_name || market_report_archive.report_name,
-				remarks: remarks || market_report_archive.remarks,
-				updated_at: new Date(),
-			})
-			.where(eq(market_report_archive.uuid, snapshot_uuid))
-			.returning();
-
-		if (!updated.length) {
-			return res.status(404).json({
-				toast: {
-					status: 404,
-					type: 'error',
-					message: 'Report snapshot not found',
-				},
-			});
-		}
-
-		const toast = {
-			status: 200,
-			type: 'update',
-			message: 'Market report updated successfully',
 		};
 
 		return res.status(200).json({ toast, data: updated[0] });
