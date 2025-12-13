@@ -18,6 +18,7 @@ import {
 import {
 	selectItemZipperEndApprovedQuantity,
 	selectPartyWiseApprovedQuantity,
+	selectItemZipperEndSwatchApprovedQuantity,
 } from './query/item_zipper_number_end_wise_approved.js';
 import { selectLabDip } from './query/lab_dip.js';
 import {
@@ -200,6 +201,12 @@ reportRouter.get('/lab-dip', selectLabDip);
 reportRouter.get(
 	'/item-zipper-number-end-wise-approved',
 	selectItemZipperEndApprovedQuantity
+);
+
+// * Item Zipper Number End Wise Swatch Approved
+reportRouter.get(
+	'/item-zipper-number-end-wise-swatch-approved',
+	selectItemZipperEndSwatchApprovedQuantity
 );
 
 // * party wise approved quantity

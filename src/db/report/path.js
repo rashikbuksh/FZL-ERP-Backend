@@ -850,6 +850,24 @@ export const pathReport = {
 			},
 		},
 	},
+	'/report/item-zipper-number-end-wise-swatch-approved': {
+		get: {
+			summary: 'Item Zipper Number End Wise Swatch Approved',
+			description: 'Item Zipper Number End Wise Swatch Approved',
+			tags: ['report'],
+			operationId: 'selectItemZipperEndSwatchApprovedQuantity',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					item_name: SE.string('Item Name'),
+					zipper_number_name: SE.string('Zipper Number Name'),
+					end_type_name: SE.string('End Type Name'),
+					not_approved: SE.number(610),
+					approved: SE.number(610),
+				}),
+			},
+		},
+	},
 	'/report/order-sheet-pdf-report': {
 		get: {
 			summary: 'Order Sheet Pdf Report',
