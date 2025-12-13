@@ -269,8 +269,8 @@ export async function ProductionReportSnm(req, res, next) {
                 CASE WHEN sfg.recipe_uuid IS NOT NULL THEN oe.swatch_approval_date END as swatch_approval_date,
                 oe.swatch_approval_received as swatch_approval_received,
                 oe.swatch_approval_received_date as swatch_approval_received_date,
-                CASE WHEN (dbm.batch_rank = 1 OR dbm.batch_rank IS NULL) AND sfg.recipe_uuid IS NULL THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as not_approved_quantity,
-                CASE WHEN (dbm.batch_rank = 1 OR dbm.batch_rank IS NULL) AND sfg.recipe_uuid IS NOT NULL THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as approved_quantity,
+                CASE WHEN (dbm.batch_rank = 1 OR dbm.batch_rank IS NULL) AND oe.swatch_approval_received = FALSE THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as not_approved_quantity,
+                CASE WHEN (dbm.batch_rank = 1 OR dbm.batch_rank IS NULL) AND oe.swatch_approval_received = TRUE THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as approved_quantity,
                 sfg.recipe_uuid,
                 recipe.name as recipe_name,
                 CASE 
